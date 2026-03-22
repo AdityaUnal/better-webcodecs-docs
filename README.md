@@ -8,11 +8,11 @@ A comprehensive, single-file documentation website for the WebCodecs API.
 ## Free Hosting Options
 
 ### Option 1: GitHub Pages (Recommended)
-1. Create a new GitHub repository (e.g. `webcodecs-docs`)
+1. Create a new GitHub repository (e.g. `better-webcodecs-docs`)
 2. Upload `index.html` to the repo
 3. Go to Settings → Pages
 4. Set source to `main` branch, root `/`
-5. Your site will be live at `https://yourusername.github.io/webcodecs-docs/`
+5. Your site will be live at `https://yourusername.github.io/better-webcodecs-docs/`
 
 ### Option 2: Netlify Drop (Fastest)
 1. Go to https://app.netlify.com/drop
