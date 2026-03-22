@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WebCodecs API — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --surface: #12151e;
+    --surface2: #1a1e2c;
+    --border: #232840;
+    --accent: #5865f8;
+    --accent2: #38e0c8;
+    --accent3: #ff6b6b;
+    --text: #e0e4f0;
+    --muted: #6b7499;
+    --code-bg: #0d1117;
+    --sidebar-w: 270px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform .3s;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .logo-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: .08em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .sidebar-logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .sidebar-logo span { color: var(--accent2); }
+
+  nav { padding: 12px 0 24px; flex: 1; }
+  .nav-section {
+    padding: 10px 20px 4px;
+    font-size: 10px;
+    letter-spacing: .12em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  nav a {
+    display: block;
+    padding: 7px 20px;
+    color: #9aa0c0;
+    text-decoration: none;
+    font-size: 13.5px;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+  }
+  nav a:hover { color: var(--text); background: var(--surface2); }
+  nav a.active { color: var(--accent2); border-left-color: var(--accent2); background: rgba(56,224,200,.06); }
+  nav a .badge {
+    float: right;
+    font-size: 10px;
+    background: rgba(88,101,248,.2);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 1px 6px;
+  }
+
+  /* ── Main ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 900px;
+    padding: 48px 52px;
+  }
+
+  /* ── Sections ── */
+  section { margin-bottom: 72px; }
+
+  .hero {
+    background: linear-gradient(135deg, #12172a 0%, #0d1020 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 52px;
+    margin-bottom: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(88,101,248,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(56,224,200,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(88,101,248,.15);
+    border: 1px solid rgba(88,101,248,.3);
+    color: #a0aaff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+    letter-spacing: .04em;
+  }
+  .hero h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero h2 em { font-style: normal; color: var(--accent2); }
+  .hero p { font-size: 16px; color: #8a90b0; max-width: 540px; line-height: 1.7; }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .chip.green { border-color: rgba(56,224,200,.3); color: var(--accent2); background: rgba(56,224,200,.06); }
+  .chip.blue  { border-color: rgba(88,101,248,.3); color: #a0aaff; background: rgba(88,101,248,.06); }
+
+  /* Section heading */
+  .sec-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .sec-label .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+  }
+  .sec-label span {
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  h2.title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+  h3.sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #d0d6f0;
+    margin: 28px 0 10px;
+  }
+  p { color: #9aa0c0; margin-bottom: 14px; }
+  p strong { color: var(--text); font-weight: 500; }
+
+  /* Cards grid */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* Code blocks */
+  .code-wrap {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 18px 0;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: #0a0e16;
+  }
+  .code-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent2); }
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .kw  { color: #c792ea; }
+  .fn  { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .cls { color: #ffcb6b; }
+  .prop{ color: var(--accent2); }
+
+  /* API reference table */
+  .api-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+  .api-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .api-table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    color: #9aa0c0;
+    vertical-align: top;
+  }
+  .api-table tr:hover td { background: var(--surface2); }
+  .api-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    background: rgba(56,224,200,.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .tag-get  { color: #4ade80; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .tag-set  { color: #fb923c; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .tag-meth { color: #60a5fa; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .tag-evt  { color: #a78bfa; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Callout */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout.info  { background: rgba(88,101,248,.08); border-left: 3px solid var(--accent); }
+  .callout.warn  { background: rgba(251,146,60,.08); border-left: 3px solid #fb923c; }
+  .callout.tip   { background: rgba(56,224,200,.08); border-left: 3px solid var(--accent2); }
+  .callout .icon { font-size: 16px; flex-shrink: 0; padding-top: 1px; }
+  .callout p { margin: 0; font-size: 13.5px; color: #9aa0c0; }
+  .callout p strong { color: var(--text); }
+
+  /* Browser support */
+  .browser-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+  .browser-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .browser-card .b-icon { font-size: 28px; }
+  .browser-card .b-name { font-size: 12px; font-weight: 600; color: var(--text); margin: 6px 0 4px; }
+  .browser-card .b-ver  { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .browser-card .b-status { font-size: 11px; margin-top: 6px; }
+  .status-full    { color: #4ade80; }
+  .status-partial { color: #fb923c; }
+  .status-none    { color: var(--accent3); }
+
+  /* Flow diagram SVG wrapper */
+  .flow-wrap { margin: 20px 0; text-align: center; }
+
+  /* Divider */
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Hamburger */
+  #menu-toggle {
+    display: none;
+    position: fixed;
+    top: 14px; left: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    z-index: 200;
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  @media (max-width: 800px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 60px 20px 32px; }
+    #menu-toggle { display: block; }
+    .cards { grid-template-columns: 1fr; }
+    .browser-grid { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 28px 24px; }
+    .hero h2 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">W3C API</div>
+    <h1>Web<span>Codecs</span><br>Docs</h1>
+  </div>
+  <nav>
+    <div class="nav-section">Getting Started</div>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#concepts">Core Concepts</a>
+    <a href="#browser-support">Browser Support</a>
+
+    <div class="nav-section">Video</div>
+    <a href="#videodecoder">VideoDecoder</a>
+    <a href="#videoencoder">VideoEncoder</a>
+    <a href="#videoframe">VideoFrame</a>
+
+    <div class="nav-section">Audio</div>
+    <a href="#audiodecoder">AudioDecoder</a>
+    <a href="#audioencoder">AudioEncoder</a>
+    <a href="#audiodata">AudioData</a>
+
+    <div class="nav-section">Chunks & Streams</div>
+    <a href="#encoded-chunks">EncodedChunks</a>
+    <a href="#imagebitmap">ImageBitmap & Canvas</a>
+    <a href="#streams">ReadableStream Integration</a>
+
+    <div class="nav-section">Guides</div>
+    <a href="#guide-decode">Decoding Video <span class="badge">Guide</span></a>
+    <a href="#guide-encode">Encoding Video <span class="badge">Guide</span></a>
+    <a href="#guide-audio">Audio Pipeline <span class="badge">Guide</span></a>
+    <a href="#errors">Error Handling</a>
+    <a href="#perf">Performance Tips</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">⚡ Low-Level Media API</div>
+    <h2>WebCodecs <em>API</em><br>Reference</h2>
+    <p>Direct, hardware-accelerated access to browser-native audio and video codecs — without WebAssembly overhead.</p>
+    <div class="hero-chips">
+      <span class="chip green">W3C Candidate Rec</span>
+      <span class="chip blue">Chrome 94+</span>
+      <span class="chip blue">Edge 94+</span>
+      <span class="chip blue">Firefox 130+</span>
+      <span class="chip">GPU Accelerated</span>
+      <span class="chip">Streams API</span>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="sec-label"><div class="dot"></div><span>Introduction</span></div>
+    <h2 class="title">What is WebCodecs?</h2>
+    <p>The <strong>WebCodecs API</strong> gives web developers low-level access to the individual frames of a video stream and chunks of audio. It is useful for web applications that need full control over the way media is processed — video editors, conferencing tools, live streamers, and transcoding pipelines.</p>
+    <p>Many Web APIs (Web Audio, WebRTC, MSE) use media codecs internally, but expose no direct access to raw frames or encoded chunks. Developers previously had to ship entire codec implementations via WebAssembly — wasting bandwidth, battery and latency. WebCodecs solves this by exposing the codecs <em>already inside the browser</em>.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-icon">🎞️</div><h4>Video Encoding</h4><p>Encode raw VideoFrames to H.264, VP8, VP9, AV1 and more with fine-grained bitrate control.</p></div>
+      <div class="card"><div class="card-icon">📼</div><h4>Video Decoding</h4><p>Decode EncodedVideoChunks into VideoFrame objects ready for Canvas, WebGL, or WebGPU.</p></div>
+      <div class="card"><div class="card-icon">🎵</div><h4>Audio Encoding</h4><p>Encode AudioData to Opus, AAC, FLAC using the browser's native codec implementation.</p></div>
+      <div class="card"><div class="card-icon">🔊</div><h4>Audio Decoding</h4><p>Decode EncodedAudioChunks into AudioData for rendering via AudioWorklet or further processing.</p></div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- CONCEPTS -->
+  <section id="concepts">
+    <div class="sec-label"><div class="dot"></div><span>Architecture</span></div>
+    <h2 class="title">Core Concepts</h2>
+    <p>WebCodecs uses an <strong>asynchronous, queue-based processing model</strong>. Encoders and decoders each maintain an internal processing queue. Control messages from <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);background:rgba(56,224,200,.08);padding:2px 6px;border-radius:4px">configure()</code>, <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);background:rgba(56,224,200,.08);padding:2px 6px;border-radius:4px">encode()</code>, <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);background:rgba(56,224,200,.08);padding:2px 6px;border-radius:4px">decode()</code>, and <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);background:rgba(56,224,200,.08);padding:2px 6px;border-radius:4px">flush()</code> operate asynchronously by appending to this queue.</p>
+
+    <div class="flow-wrap">
+      <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;border-radius:10px;background:#0d1117;border:1px solid #232840">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#5865f8"/>
+          </marker>
+        </defs>
+        <!-- boxes -->
+        <rect x="20" y="40" width="120" height="50" rx="8" fill="#12151e" stroke="#232840"/>
+        <text x="80" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#38e0c8">MediaStream</text>
+        <text x="80" y="77" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6b7499">/ File / Camera</text>
+
+        <rect x="185" y="40" width="120" height="50" rx="8" fill="#12151e" stroke="#5865f8"/>
+        <text x="245" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#a0aaff">VideoEncoder</text>
+        <text x="245" y="77" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6b7499">AudioEncoder</text>
+
+        <rect x="350" y="40" width="120" height="50" rx="8" fill="#12151e" stroke="#232840"/>
+        <text x="410" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#38e0c8">Encoded</text>
+        <text x="410" y="77" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6b7499">Chunk Stream</text>
+
+        <rect x="515" y="40" width="120" height="50" rx="8" fill="#12151e" stroke="#5865f8"/>
+        <text x="575" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#a0aaff">VideoDecoder</text>
+        <text x="575" y="77" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6b7499">AudioDecoder</text>
+
+        <!-- arrows -->
+        <line x1="140" y1="65" x2="183" y2="65" stroke="#5865f8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="305" y1="65" x2="348" y2="65" stroke="#5865f8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="470" y1="65" x2="513" y2="65" stroke="#5865f8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- labels -->
+        <text x="350" y="18" text-anchor="middle" font-family="Syne,sans-serif" font-size="11" font-weight="700" fill="#e0e4f0">WebCodecs Pipeline</text>
+      </svg>
+    </div>
+
+    <h3 class="sub">Codec States</h3>
+    <p>Every codec instance cycles through these states:</p>
+    <table class="api-table">
+      <tr><th>State</th><th>Description</th></tr>
+      <tr><td><code>unconfigured</code></td><td>Initial state. Must call <code>configure()</code> before use.</td></tr>
+      <tr><td><code>configured</code></td><td>Ready to process. Call <code>encode()</code> / <code>decode()</code>.</td></tr>
+      <tr><td><code>closed</code></td><td>Permanently closed. No further operations allowed.</td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="icon">ℹ️</div>
+      <p><strong>flush() vs reset():</strong> <code>flush()</code> waits for all pending work to complete. <code>reset()</code> synchronously aborts and clears the queue. <code>close()</code> is permanent — the instance cannot be reused.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- BROWSER SUPPORT -->
+  <section id="browser-support">
+    <div class="sec-label"><div class="dot"></div><span>Compatibility</span></div>
+    <h2 class="title">Browser Support</h2>
+    <div class="browser-grid">
+      <div class="browser-card">
+        <div class="b-icon">🟡</div>
+        <div class="b-name">Chrome</div>
+        <div class="b-ver">94+</div>
+        <div class="b-status status-full">✓ Full Support</div>
+      </div>
+      <div class="browser-card">
+        <div class="b-icon">🔵</div>
+        <div class="b-name">Edge</div>
+        <div class="b-ver">94+</div>
+        <div class="b-status status-full">✓ Full Support</div>
+      </div>
+      <div class="browser-card">
+        <div class="b-icon">🦊</div>
+        <div class="b-name">Firefox</div>
+        <div class="b-ver">130+</div>
+        <div class="b-status status-full">✓ Full Support</div>
+      </div>
+      <div class="browser-card">
+        <div class="b-icon">🧭</div>
+        <div class="b-name">Safari</div>
+        <div class="b-ver">18+</div>
+        <div class="b-status status-partial">~ Video only</div>
+      </div>
+    </div>
+    <div class="callout tip" style="margin-top:16px">
+      <div class="icon">💡</div>
+      <p>Always feature-detect using the static <code>isConfigSupported()</code> method before using a codec. Not all browsers support all codecs (e.g., H.264 support varies by platform license).</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- VIDEO DECODER -->
+  <section id="videodecoder">
+    <div class="sec-label"><div class="dot"></div><span>Video</span></div>
+    <h2 class="title">VideoDecoder</h2>
+    <p>Decodes <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">EncodedVideoChunk</code> objects into <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">VideoFrame</code> objects. The decoded frames are delivered via the <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">output</code> callback.</p>
+
+    <h3 class="sub">Constructor</h3>
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">decoder</span> = <span class="kw">new</span> <span class="cls">VideoDecoder</span>({
+  <span class="prop">output</span>: (frame) => {
+    <span class="cmt">// Paint frame to canvas</span>
+    ctx.<span class="fn">drawImage</span>(frame, <span class="num">0</span>, <span class="num">0</span>);
+    frame.<span class="fn">close</span>(); <span class="cmt">// ⚠️ Always release memory</span>
+  },
+  <span class="prop">error</span>: (err) => console.<span class="fn">error</span>(<span class="str">"Decode error:"</span>, err),
+});</pre>
+    </div>
+
+    <h3 class="sub">Methods & Properties</h3>
+    <table class="api-table">
+      <tr><th>Name</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>configure(config)</code></td><td><span class="tag-meth">method</span></td><td>Configure the decoder with codec string, dimensions, description.</td></tr>
+      <tr><td><code>decode(chunk)</code></td><td><span class="tag-meth">method</span></td><td>Enqueue an <code>EncodedVideoChunk</code> for decoding.</td></tr>
+      <tr><td><code>flush()</code></td><td><span class="tag-meth">method</span></td><td>Returns a Promise that resolves when all pending frames are output.</td></tr>
+      <tr><td><code>reset()</code></td><td><span class="tag-meth">method</span></td><td>Synchronously abort all pending work and reset state to unconfigured.</td></tr>
+      <tr><td><code>close()</code></td><td><span class="tag-meth">method</span></td><td>Permanently close and free all resources.</td></tr>
+      <tr><td><code>state</code></td><td><span class="tag-get">get</span></td><td>Current state: <code>"unconfigured"</code> | <code>"configured"</code> | <code>"closed"</code></td></tr>
+      <tr><td><code>decodeQueueSize</code></td><td><span class="tag-get">get</span></td><td>Number of pending decode requests in the queue.</td></tr>
+      <tr><td><code>isConfigSupported(config)</code></td><td><span class="tag-meth">static</span></td><td>Returns a Promise resolving to a support object.</td></tr>
+    </table>
+
+    <h3 class="sub">VideoDecoderConfig</h3>
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>decoder.<span class="fn">configure</span>({
+  <span class="prop">codec</span>: <span class="str">"avc1.42001f"</span>,  <span class="cmt">// H.264 Baseline Level 3.1</span>
+  <span class="prop">codedWidth</span>: <span class="num">1280</span>,
+  <span class="prop">codedHeight</span>: <span class="num">720</span>,
+  <span class="prop">description</span>: avcDecoderConfigRecord, <span class="cmt">// Optional: ArrayBuffer</span>
+  <span class="prop">hardwareAcceleration</span>: <span class="str">"prefer-hardware"</span>, <span class="cmt">// or "prefer-software"</span>
+  <span class="prop">optimizeForLatency</span>: <span class="kw">true</span>,
+});</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- VIDEO ENCODER -->
+  <section id="videoencoder">
+    <div class="sec-label"><div class="dot"></div><span>Video</span></div>
+    <h2 class="title">VideoEncoder</h2>
+    <p>Encodes <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">VideoFrame</code> objects into <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">EncodedVideoChunk</code> objects, delivered via the <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">output</code> callback along with optional <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">EncodedVideoChunkMetadata</code>.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — VideoEncoder setup</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">encoder</span> = <span class="kw">new</span> <span class="cls">VideoEncoder</span>({
+  <span class="prop">output</span>: (chunk, metadata) => {
+    <span class="cmt">// chunk: EncodedVideoChunk</span>
+    <span class="cmt">// metadata: { decoderConfig?, svc?, alphaSideData? }</span>
+    muxer.<span class="fn">addVideoChunk</span>(chunk, metadata);
+  },
+  <span class="prop">error</span>: (e) => console.<span class="fn">error</span>(e),
+});
+
+encoder.<span class="fn">configure</span>({
+  <span class="prop">codec</span>: <span class="str">"vp09.00.10.08"</span>, <span class="cmt">// VP9 Profile 0</span>
+  <span class="prop">width</span>: <span class="num">1280</span>,
+  <span class="prop">height</span>: <span class="num">720</span>,
+  <span class="prop">bitrate</span>: <span class="num">2_000_000</span>,
+  <span class="prop">framerate</span>: <span class="num">30</span>,
+  <span class="prop">bitrateMode</span>: <span class="str">"variable"</span>,
+  <span class="prop">hardwareAcceleration</span>: <span class="str">"prefer-hardware"</span>,
+  <span class="prop">latencyMode</span>: <span class="str">"realtime"</span>,  <span class="cmt">// for conferencing</span>
+});
+
+<span class="cmt">// Encode a frame — force keyframe every 150 frames</span>
+encoder.<span class="fn">encode</span>(videoFrame, { <span class="prop">keyFrame</span>: frameCount % <span class="num">150</span> === <span class="num">0</span> });
+videoFrame.<span class="fn">close</span>();</pre>
+    </div>
+
+    <h3 class="sub">Supported Codecs</h3>
+    <table class="api-table">
+      <tr><th>Codec</th><th>Codec String Example</th><th>Notes</th></tr>
+      <tr><td>H.264 / AVC</td><td><code>avc1.42001f</code></td><td>Widely supported; patent-encumbered on some platforms</td></tr>
+      <tr><td>VP8</td><td><code>vp8</code></td><td>Royalty-free; common in WebRTC</td></tr>
+      <tr><td>VP9</td><td><code>vp09.00.10.08</code></td><td>Better compression than VP8; royalty-free</td></tr>
+      <tr><td>AV1</td><td><code>av01.0.04M.08</code></td><td>Best compression; hardware support growing</td></tr>
+      <tr><td>H.265 / HEVC</td><td><code>hev1.1.6.L93.B0</code></td><td>Platform-specific; check isConfigSupported()</td></tr>
+    </table>
+  </section>
+
+  <hr/>
+
+  <!-- VIDEO FRAME -->
+  <section id="videoframe">
+    <div class="sec-label"><div class="dot"></div><span>Video</span></div>
+    <h2 class="title">VideoFrame</h2>
+    <p>Represents a single decoded video frame. <strong>Implements <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">CanvasImageSource</code></strong>, so it can be drawn directly to a canvas, used in WebGL, or passed to WebGPU.</p>
+
+    <div class="callout warn">
+      <div class="icon">⚠️</div>
+      <p><strong>Always call <code>frame.close()</code></strong> when done. VideoFrames hold GPU/CPU memory and system resources. Failing to close them causes memory leaks and degraded performance.</p>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Creating a VideoFrame</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cmt">// From a canvas element</span>
+<span class="kw">const</span> <span class="prop">frame</span> = <span class="kw">new</span> <span class="cls">VideoFrame</span>(canvasElement, {
+  <span class="prop">timestamp</span>: performance.<span class="fn">now</span>() * <span class="num">1000</span>, <span class="cmt">// microseconds</span>
+  <span class="prop">duration</span>: <span class="num">33333</span>, <span class="cmt">// ~30fps in µs</span>
+});
+
+<span class="cmt">// From raw pixel data (RGBA)</span>
+<span class="kw">const</span> <span class="prop">init</span> = {
+  <span class="prop">format</span>: <span class="str">"RGBA"</span>,
+  <span class="prop">codedWidth</span>: <span class="num">640</span>, <span class="prop">codedHeight</span>: <span class="num">480</span>,
+  <span class="prop">timestamp</span>: <span class="num">0</span>,
+};
+<span class="kw">const</span> <span class="prop">frame2</span> = <span class="kw">new</span> <span class="cls">VideoFrame</span>(rgbaBuffer, init);
+
+<span class="cmt">// Read pixel data back</span>
+<span class="kw">await</span> frame.<span class="fn">copyTo</span>(outputBuffer, {
+  <span class="prop">format</span>: <span class="str">"I420"</span>,
+  <span class="prop">rect</span>: { x: <span class="num">0</span>, y: <span class="num">0</span>, width: <span class="num">640</span>, height: <span class="num">480</span> },
+});
+
+frame.<span class="fn">close</span>(); <span class="cmt">// Always!</span></pre>
+    </div>
+
+    <h3 class="sub">Pixel Formats</h3>
+    <table class="api-table">
+      <tr><th>Format</th><th>Description</th></tr>
+      <tr><td><code>I420</code></td><td>YUV planar 4:2:0 — most common decoded format</td></tr>
+      <tr><td><code>I420A</code></td><td>YUV 4:2:0 with alpha plane</td></tr>
+      <tr><td><code>I444</code></td><td>YUV planar 4:4:4 — full chroma resolution</td></tr>
+      <tr><td><code>NV12</code></td><td>YUV semi-planar — common GPU native format</td></tr>
+      <tr><td><code>RGBA</code></td><td>8-bit RGBA interleaved</td></tr>
+      <tr><td><code>BGRA</code></td><td>8-bit BGRA interleaved</td></tr>
+    </table>
+  </section>
+
+  <hr/>
+
+  <!-- AUDIO DECODER -->
+  <section id="audiodecoder">
+    <div class="sec-label"><div class="dot"></div><span>Audio</span></div>
+    <h2 class="title">AudioDecoder</h2>
+    <p>Decodes <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">EncodedAudioChunk</code> objects into <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">AudioData</code> objects for playback via AudioWorklet or further DSP processing.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">audioDecoder</span> = <span class="kw">new</span> <span class="cls">AudioDecoder</span>({
+  <span class="prop">output</span>: (audioData) => {
+    <span class="cmt">// Route to AudioWorklet or Web Audio API</span>
+    workletNode.port.<span class="fn">postMessage</span>({ audioData }, [audioData]);
+  },
+  <span class="prop">error</span>: (e) => console.<span class="fn">error</span>(e),
+});
+
+audioDecoder.<span class="fn">configure</span>({
+  <span class="prop">codec</span>: <span class="str">"opus"</span>,
+  <span class="prop">sampleRate</span>: <span class="num">48000</span>,
+  <span class="prop">numberOfChannels</span>: <span class="num">2</span>,
+});</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- AUDIO ENCODER -->
+  <section id="audioencoder">
+    <div class="sec-label"><div class="dot"></div><span>Audio</span></div>
+    <h2 class="title">AudioEncoder</h2>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">audioEncoder</span> = <span class="kw">new</span> <span class="cls">AudioEncoder</span>({
+  <span class="prop">output</span>: (chunk, meta) => muxer.<span class="fn">addAudioChunk</span>(chunk, meta),
+  <span class="prop">error</span>: (e) => console.<span class="fn">error</span>(e),
+});
+
+audioEncoder.<span class="fn">configure</span>({
+  <span class="prop">codec</span>: <span class="str">"opus"</span>,
+  <span class="prop">sampleRate</span>: <span class="num">48000</span>,
+  <span class="prop">numberOfChannels</span>: <span class="num">2</span>,
+  <span class="prop">bitrate</span>: <span class="num">128_000</span>,
+});</pre>
+    </div>
+
+    <h3 class="sub">Supported Audio Codecs</h3>
+    <table class="api-table">
+      <tr><th>Codec</th><th>String</th><th>Notes</th></tr>
+      <tr><td>Opus</td><td><code>opus</code></td><td>Royalty-free, excellent quality — preferred for WebRTC</td></tr>
+      <tr><td>AAC-LC</td><td><code>mp4a.40.2</code></td><td>Widely supported; common in MP4 containers</td></tr>
+      <tr><td>FLAC</td><td><code>flac</code></td><td>Lossless; large output files</td></tr>
+      <tr><td>PCM (u8)</td><td><code>pcm-u8</code></td><td>Uncompressed 8-bit</td></tr>
+      <tr><td>PCM (s16)</td><td><code>pcm-s16</code></td><td>Uncompressed 16-bit signed</td></tr>
+    </table>
+  </section>
+
+  <hr/>
+
+  <!-- AUDIO DATA -->
+  <section id="audiodata">
+    <div class="sec-label"><div class="dot"></div><span>Audio</span></div>
+    <h2 class="title">AudioData</h2>
+    <p>Represents a block of decoded audio samples. Like VideoFrame, <strong>always call <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">audioData.close()</code></strong> after use to free resources.</p>
+
+    <table class="api-table">
+      <tr><th>Property/Method</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>format</code></td><td><span class="tag-get">get</span></td><td>Sample format: <code>"u8"</code>, <code>"s16"</code>, <code>"s32"</code>, <code>"f32"</code>, <code>"u8-planar"</code>, etc.</td></tr>
+      <tr><td><code>sampleRate</code></td><td><span class="tag-get">get</span></td><td>Samples per second (e.g., 44100, 48000)</td></tr>
+      <tr><td><code>numberOfFrames</code></td><td><span class="tag-get">get</span></td><td>Number of audio frames in this chunk</td></tr>
+      <tr><td><code>numberOfChannels</code></td><td><span class="tag-get">get</span></td><td>Number of audio channels (1=mono, 2=stereo)</td></tr>
+      <tr><td><code>duration</code></td><td><span class="tag-get">get</span></td><td>Duration in microseconds</td></tr>
+      <tr><td><code>timestamp</code></td><td><span class="tag-get">get</span></td><td>Presentation timestamp in microseconds</td></tr>
+      <tr><td><code>copyTo(dest, options)</code></td><td><span class="tag-meth">method</span></td><td>Copy audio samples into a provided ArrayBuffer</td></tr>
+      <tr><td><code>clone()</code></td><td><span class="tag-meth">method</span></td><td>Create a copy (retains resource lifetime independently)</td></tr>
+      <tr><td><code>close()</code></td><td><span class="tag-meth">method</span></td><td>Release resources immediately</td></tr>
+    </table>
+  </section>
+
+  <hr/>
+
+  <!-- ENCODED CHUNKS -->
+  <section id="encoded-chunks">
+    <div class="sec-label"><div class="dot"></div><span>Chunks</span></div>
+    <h2 class="title">EncodedVideoChunk & EncodedAudioChunk</h2>
+    <p>Containers for compressed media data. Both share the same interface shape.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cmt">// Creating manually (e.g., from network/file)</span>
+<span class="kw">const</span> <span class="prop">chunk</span> = <span class="kw">new</span> <span class="cls">EncodedVideoChunk</span>({
+  <span class="prop">type</span>: <span class="str">"key"</span>,      <span class="cmt">// "key" | "delta"</span>
+  <span class="prop">timestamp</span>: <span class="num">0</span>,     <span class="cmt">// microseconds</span>
+  <span class="prop">duration</span>: <span class="num">33333</span>,  <span class="cmt">// microseconds</span>
+  <span class="prop">data</span>: nalUnitBuffer,
+});
+
+<span class="cmt">// Reading the data back</span>
+<span class="kw">const</span> <span class="prop">buf</span> = <span class="kw">new</span> <span class="cls">ArrayBuffer</span>(chunk.byteLength);
+chunk.<span class="fn">copyTo</span>(buf);</pre>
+    </div>
+
+    <table class="api-table">
+      <tr><th>Property</th><th>Type</th><th>Value</th></tr>
+      <tr><td><code>type</code></td><td><span class="tag-get">get</span></td><td><code>"key"</code> (keyframe/intra) or <code>"delta"</code> (inter/dependent frame)</td></tr>
+      <tr><td><code>timestamp</code></td><td><span class="tag-get">get</span></td><td>Presentation timestamp in microseconds</td></tr>
+      <tr><td><code>duration</code></td><td><span class="tag-get">get</span></td><td>Duration in microseconds (may be undefined)</td></tr>
+      <tr><td><code>byteLength</code></td><td><span class="tag-get">get</span></td><td>Size of encoded data in bytes</td></tr>
+      <tr><td><code>copyTo(dest)</code></td><td><span class="tag-meth">method</span></td><td>Copy encoded bytes into an ArrayBuffer or TypedArray</td></tr>
+    </table>
+  </section>
+
+  <hr/>
+
+  <!-- IMAGEBITMAP -->
+  <section id="imagebitmap">
+    <div class="sec-label"><div class="dot"></div><span>Rendering</span></div>
+    <h2 class="title">Rendering VideoFrames</h2>
+    <p>VideoFrame implements <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">CanvasImageSource</code>, making it directly usable with Canvas 2D, WebGL, and WebGPU.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Canvas 2D</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">canvas</span> = document.<span class="fn">getElementById</span>(<span class="str">"output"</span>);
+<span class="kw">const</span> <span class="prop">ctx</span> = canvas.<span class="fn">getContext</span>(<span class="str">"2d"</span>);
+
+<span class="cmt">// In the decoder output callback:</span>
+<span class="prop">output</span>: (frame) => {
+  ctx.<span class="fn">drawImage</span>(frame, <span class="num">0</span>, <span class="num">0</span>);
+  frame.<span class="fn">close</span>();
+}</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — WebGL texture</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cmt">// VideoFrame as a WebGL texture source</span>
+gl.<span class="fn">bindTexture</span>(gl.TEXTURE_2D, texture);
+gl.<span class="fn">texImage2D</span>(
+  gl.TEXTURE_2D, <span class="num">0</span>, gl.RGBA,
+  gl.RGBA, gl.UNSIGNED_BYTE,
+  frame  <span class="cmt">// VideoFrame is a valid TexImageSource</span>
+);
+frame.<span class="fn">close</span>();</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- STREAMS -->
+  <section id="streams">
+    <div class="sec-label"><div class="dot"></div><span>Integration</span></div>
+    <h2 class="title">ReadableStream Integration</h2>
+    <p>Use <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">MediaStreamTrackProcessor</code> to bridge a live MediaStream into WebCodecs-ready VideoFrame or AudioData streams.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Camera → Encoder pipeline</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">stream</span> = <span class="kw">await</span> navigator.mediaDevices
+  .<span class="fn">getUserMedia</span>({ video: <span class="kw">true</span>, audio: <span class="kw">true</span> });
+
+<span class="kw">const</span> [<span class="prop">videoTrack</span>] = stream.<span class="fn">getVideoTracks</span>();
+<span class="kw">const</span> <span class="prop">processor</span> = <span class="kw">new</span> <span class="cls">MediaStreamTrackProcessor</span>({ track: videoTrack });
+<span class="kw">const</span> <span class="prop">reader</span> = processor.readable.<span class="fn">getReader</span>();
+
+<span class="kw">while</span> (<span class="kw">true</span>) {
+  <span class="kw">const</span> { value: <span class="prop">frame</span>, done } = <span class="kw">await</span> reader.<span class="fn">read</span>();
+  <span class="kw">if</span> (done) <span class="kw">break</span>;
+  encoder.<span class="fn">encode</span>(frame, { <span class="prop">keyFrame</span>: frameCount++ % <span class="num">150</span> === <span class="num">0</span> });
+  frame.<span class="fn">close</span>();
+}</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- GUIDE: DECODE -->
+  <section id="guide-decode">
+    <div class="sec-label"><div class="dot"></div><span>Guide</span></div>
+    <h2 class="title">Guide: Decoding a Video File</h2>
+    <p>A complete, minimal example of fetching a video file, demuxing it (using mp4box.js), and rendering decoded frames to a canvas.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Full Decode Pipeline</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cmt">// 1. Feature detection</span>
+<span class="kw">const</span> { <span class="prop">supported</span> } = <span class="kw">await</span> <span class="cls">VideoDecoder</span>.<span class="fn">isConfigSupported</span>({
+  <span class="prop">codec</span>: <span class="str">"avc1.42001f"</span>,
+  <span class="prop">codedWidth</span>: <span class="num">1280</span>, <span class="prop">codedHeight</span>: <span class="num">720</span>,
+});
+<span class="kw">if</span> (!supported) <span class="kw">throw new</span> <span class="cls">Error</span>(<span class="str">"Codec not supported"</span>);
+
+<span class="cmt">// 2. Set up decoder</span>
+<span class="kw">const</span> <span class="prop">canvas</span> = document.<span class="fn">getElementById</span>(<span class="str">"canvas"</span>);
+<span class="kw">const</span> <span class="prop">ctx</span> = canvas.<span class="fn">getContext</span>(<span class="str">"2d"</span>);
+
+<span class="kw">const</span> <span class="prop">decoder</span> = <span class="kw">new</span> <span class="cls">VideoDecoder</span>({
+  <span class="prop">output</span>: (frame) => {
+    canvas.width  = frame.displayWidth;
+    canvas.height = frame.displayHeight;
+    ctx.<span class="fn">drawImage</span>(frame, <span class="num">0</span>, <span class="num">0</span>);
+    frame.<span class="fn">close</span>();
+  },
+  <span class="prop">error</span>: console.<span class="fn">error</span>,
+});
+
+decoder.<span class="fn">configure</span>({
+  <span class="prop">codec</span>: <span class="str">"avc1.42001f"</span>,
+  <span class="prop">codedWidth</span>: <span class="num">1280</span>, <span class="prop">codedHeight</span>: <span class="num">720</span>,
+  <span class="prop">description</span>: avcConfig, <span class="cmt">// from demuxer</span>
+});
+
+<span class="cmt">// 3. Feed encoded chunks from demuxer</span>
+<span class="kw">for</span> (<span class="kw">const</span> sample <span class="kw">of</span> videoSamples) {
+  decoder.<span class="fn">decode</span>(<span class="kw">new</span> <span class="cls">EncodedVideoChunk</span>({
+    <span class="prop">type</span>: sample.is_sync ? <span class="str">"key"</span> : <span class="str">"delta"</span>,
+    <span class="prop">timestamp</span>: sample.cts * <span class="num">1e6</span> / sample.timescale,
+    <span class="prop">duration</span>: sample.duration * <span class="num">1e6</span> / sample.timescale,
+    <span class="prop">data</span>: sample.data,
+  }));
+}
+
+<span class="kw">await</span> decoder.<span class="fn">flush</span>();
+decoder.<span class="fn">close</span>();
+console.<span class="fn">log</span>(<span class="str">"Done decoding!"</span>);</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- GUIDE: ENCODE -->
+  <section id="guide-encode">
+    <div class="sec-label"><div class="dot"></div><span>Guide</span></div>
+    <h2 class="title">Guide: Encoding Camera Feed to WebM</h2>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Encode + Mux to WebM</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cmt">// Uses webm-muxer (npm) for containerization</span>
+<span class="kw">import</span> { <span class="cls">Muxer</span>, <span class="cls">ArrayBufferTarget</span> } <span class="kw">from</span> <span class="str">"webm-muxer"</span>;
+
+<span class="kw">const</span> <span class="prop">target</span> = <span class="kw">new</span> <span class="cls">ArrayBufferTarget</span>();
+<span class="kw">const</span> <span class="prop">muxer</span> = <span class="kw">new</span> <span class="cls">Muxer</span>({ target, <span class="prop">video</span>: { codec: <span class="str">"V_VP9"</span>, width: <span class="num">1280</span>, height: <span class="num">720</span> }});
+
+<span class="kw">const</span> <span class="prop">encoder</span> = <span class="kw">new</span> <span class="cls">VideoEncoder</span>({
+  <span class="prop">output</span>: (chunk, meta) => muxer.<span class="fn">addVideoChunk</span>(chunk, meta),
+  <span class="prop">error</span>: console.<span class="fn">error</span>,
+});
+encoder.<span class="fn">configure</span>({ codec: <span class="str">"vp09.00.10.08"</span>, width: <span class="num">1280</span>, height: <span class="num">720</span>, bitrate: <span class="num">2e6</span>, framerate: <span class="num">30</span> });
+
+<span class="cmt">// Feed frames...</span>
+<span class="kw">let</span> <span class="prop">frameIndex</span> = <span class="num">0</span>;
+<span class="kw">function</span> <span class="fn">encodeFrame</span>(bitmap) {
+  <span class="kw">const</span> <span class="prop">frame</span> = <span class="kw">new</span> <span class="cls">VideoFrame</span>(bitmap, {
+    <span class="prop">timestamp</span>: frameIndex * <span class="num">33333</span>,
+    <span class="prop">duration</span>: <span class="num">33333</span>,
+  });
+  encoder.<span class="fn">encode</span>(frame, { <span class="prop">keyFrame</span>: frameIndex % <span class="num">150</span> === <span class="num">0</span> });
+  frame.<span class="fn">close</span>();
+  frameIndex++;
+}
+
+<span class="cmt">// Finalize</span>
+<span class="kw">async function</span> <span class="fn">finish</span>() {
+  <span class="kw">await</span> encoder.<span class="fn">flush</span>();
+  muxer.<span class="fn">finalize</span>();
+  <span class="kw">const</span> <span class="prop">blob</span> = <span class="kw">new</span> <span class="cls">Blob</span>([target.buffer], { type: <span class="str">"video/webm"</span> });
+  <span class="kw">const</span> <span class="prop">url</span> = <span class="cls">URL</span>.<span class="fn">createObjectURL</span>(blob);
+  document.<span class="fn">getElementById</span>(<span class="str">"download"</span>).href = url;
+}</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- GUIDE AUDIO -->
+  <section id="guide-audio">
+    <div class="sec-label"><div class="dot"></div><span>Guide</span></div>
+    <h2 class="title">Guide: Microphone Audio Pipeline</h2>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript — Mic → Opus Encoder</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">const</span> <span class="prop">stream</span> = <span class="kw">await</span> navigator.mediaDevices
+  .<span class="fn">getUserMedia</span>({ audio: <span class="kw">true</span> });
+<span class="kw">const</span> [<span class="prop">track</span>] = stream.<span class="fn">getAudioTracks</span>();
+
+<span class="kw">const</span> <span class="prop">proc</span> = <span class="kw">new</span> <span class="cls">MediaStreamTrackProcessor</span>({ track });
+<span class="kw">const</span> <span class="prop">reader</span> = proc.readable.<span class="fn">getReader</span>();
+
+<span class="kw">const</span> <span class="prop">enc</span> = <span class="kw">new</span> <span class="cls">AudioEncoder</span>({
+  <span class="prop">output</span>: (chunk) => sendOverNetwork(chunk),
+  <span class="prop">error</span>: console.<span class="fn">error</span>,
+});
+enc.<span class="fn">configure</span>({ codec: <span class="str">"opus"</span>, sampleRate: <span class="num">48000</span>, numberOfChannels: <span class="num">1</span>, bitrate: <span class="num">64000</span> });
+
+<span class="kw">while</span> (<span class="kw">true</span>) {
+  <span class="kw">const</span> { value: <span class="prop">audioData</span>, done } = <span class="kw">await</span> reader.<span class="fn">read</span>();
+  <span class="kw">if</span> (done) <span class="kw">break</span>;
+  enc.<span class="fn">encode</span>(audioData);
+  audioData.<span class="fn">close</span>();
+}</pre>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ERROR HANDLING -->
+  <section id="errors">
+    <div class="sec-label"><div class="dot"></div><span>Errors</span></div>
+    <h2 class="title">Error Handling</h2>
+    <p>Errors arrive via the <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">error</code> callback. A codec that encounters an error transitions to <code style="font-family:JetBrains Mono,monospace;color:var(--accent2);font-size:13px">"closed"</code> state and cannot be reused — create a new instance.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>javascript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">let</span> <span class="prop">decoder</span> = <span class="fn">createDecoder</span>();
+
+<span class="kw">function</span> <span class="fn">createDecoder</span>() {
+  <span class="kw">return new</span> <span class="cls">VideoDecoder</span>({
+    <span class="prop">output</span>: <span class="fn">handleFrame</span>,
+    <span class="prop">error</span>: (e) => {
+      console.<span class="fn">error</span>(<span class="str">"Decoder error:"</span>, e.message);
+      <span class="cmt">// Re-create if needed</span>
+      <span class="kw">if</span> (decoder.state === <span class="str">"closed"</span>) {
+        decoder = <span class="fn">createDecoder</span>();
+        decoder.<span class="fn">configure</span>(lastConfig);
+      }
+    },
+  });
+}
+
+<span class="cmt">// Common error types:</span>
+<span class="cmt">// EncodingError — codec-level encode/decode failure</span>
+<span class="cmt">// InvalidStateError — calling methods on a closed codec</span>
+<span class="cmt">// NotSupportedError — unsupported config (check isConfigSupported first!)</span></pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="icon">⚠️</div>
+      <p><strong>NotSupportedError:</strong> Always call <code>isConfigSupported()</code> before <code>configure()</code> to avoid runtime errors from unsupported codec configurations.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- PERFORMANCE -->
+  <section id="perf">
+    <div class="sec-label"><div class="dot"></div><span>Performance</span></div>
+    <h2 class="title">Performance Tips</h2>
+
+    <div class="cards">
+      <div class="card"><div class="card-icon">🚀</div><h4>Prefer Hardware Acceleration</h4><p>Use <code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">hardwareAcceleration: "prefer-hardware"</code> in config. Falls back to software automatically.</p></div>
+      <div class="card"><div class="card-icon">♻️</div><h4>Close Frames Immediately</h4><p>Call <code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">frame.close()</code> and <code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">audioData.close()</code> as soon as you're done. GPU memory is finite.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h4>Monitor Queue Size</h4><p>Watch <code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">encoder.encodeQueueSize</code>. If it grows large, back-pressure by awaiting before submitting more.</p></div>
+      <div class="card"><div class="card-icon">🔁</div><h4>Avoid Frequent flush()</h4><p><code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">flush()</code> is expensive. Call it only once all desired work is queued, not as a polling mechanism.</p></div>
+      <div class="card"><div class="card-icon">🧵</div><h4>Use Web Workers</h4><p>VideoEncoder/Decoder work in Web Workers. Offload encoding to a worker to keep the main thread responsive.</p></div>
+      <div class="card"><div class="card-icon">⚡</div><h4>realtime Latency Mode</h4><p>For live streaming/conferencing, use <code style="font-family:JetBrains Mono;font-size:11px;color:var(--accent2)">latencyMode: "realtime"</code> in VideoEncoder config.</p></div>
+    </div>
+
+    <div class="callout tip" style="margin-top:24px">
+      <div class="icon">💡</div>
+      <p><strong>Back-pressure pattern:</strong> Check <code>encoder.encodeQueueSize</code> and use <code>await encoder.flush()</code> periodically to prevent unbounded memory growth in high-throughput pipelines.</p>
+    </div>
+  </section>
+
+  <div style="padding:32px 0 8px;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--border)">
+    WebCodecs API Documentation · Based on W3C Candidate Recommendation · Last reviewed March 2026
+  </div>
+
+</main>
+
+<script>
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+// Active nav link on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+
+// Close sidebar on link click (mobile)
+navLinks.forEach(a => a.addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+}));
+</script>
+</body>
+</html>
