@@ -12,7 +12,7 @@ A comprehensive, single-file documentation website for the WebCodecs API.
 2. Upload `index.html` to the repo
 3. Go to Settings → Pages
 4. Set source to `main` branch, root `/`
-5. Your site will be live at `https://yourusername.github.io/better-webcodecs-docs/`
+5. Your site will be live at `https://yourusername.github.io/better-webcodecs-docs/` - here 'https://AdityaUnal.github.io/better-webcodecs-docs/' 
 
 ### Option 2: Netlify Drop (Fastest)
 1. Go to https://app.netlify.com/drop
